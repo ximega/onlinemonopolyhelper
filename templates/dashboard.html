@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - {{ Info.Header.title }}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2 style="margin-bottom: 20px;">{{ Info.Header.title }}</h2>
+        <nav>
+            {% for bar in bars %}
+            {{ bar|safe }}
+            {% endfor %}
+            <form action="/logout/" method="post">
+                <button class="btn btn-danger" style="width: 100%; margin-top: 20px;">{{ Info.Header.logout }}</button>
+            </form>
+        </nav>
+    </div>
+    <div class="main-content">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <div class="box">
+            <h1>
+                {{ DashboardInfo.cur_balance }}: <span class="light-blue">${{ user.money }}</span>
+            </h1>
+        </div>
+        
+        <div class="box">
+            <h2>{{ DashboardInfo.top_players_title }}</h2>
+            <ul class="top-players">
+                {% for player in top_players %}
+                <li>
+                    {{ player.username }} - <span class="light-blue">${{ player.money }}</span>
+                    {% if player.is_billed %}
+                    <span class="red">{{ DashboardInfo.player_owes }} {{ player.cur_bill_amount }}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="box">
+            <h2>{{ DashboardInfo.RecentTransactions.title }}</h2>
+            <div class="transaction-info">
+                <h3>{{ DashboardInfo.RecentTransactions.Received.title }}: <span class="light-blue">${{ user.last_received }}</span> {{ DashboardInfo.RecentTransactions.Received.suffix }} {{ user.last_received_from }}</h3>
+                <h3>{{ DashboardInfo.RecentTransactions.Sent.title}}: <span class="light-blue">${{ user.last_sent }}</span> {{ DashboardInfo.RecentTransactions.Sent.suffix }} {{ user.last_sent_to }}</h3>
+                <h3>{{ DashboardInfo.RecentTransactions.Paid.title }}: <span class="light-blue">${{ user.last_paid }}</span> {{ DashboardInfo.RecentTransactions.Paid.suffix }} {{ user.last_paid_for }}</h3>
+            </div>
+        </div>
+        
+        <div class="box">
+            <h2>{{ DashboardInfo.Forms.SendMoney.title }}</h2>
+            <form method="POST" action="/sendmoney/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ DashboardInfo.Forms.SendMoney.input_amount }}</label>
+                    <input type="number" min="10" name="amount" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ DashboardInfo.Forms.SendMoney.input_receiver }}</label>
+                    <select name="receiver_name" required>
+                        <option disabled>{{ DashboardInfo.Forms.SendMoney.select_receiver_first_option }}...</option>
+                        {% for player in top_players %}
+                        <option value="{{ player.username }}">{{ player.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">{{ DashboardInfo.Forms.SendMoney.submit_button }}</button>
+            </form>
+        </div>
+        
+        {% if user.is_billed %}
+        <div class="box">
+            <h2>{{ DashboardInfo.Forms.PayBill.title }}</h2>
+            <div class="bill-card">
+                <form method="POST" action="/paybill/">
+                    {% csrf_token %}
+                    <h3>{{ user.cur_bill_type }}</h3>
+                    <p>{{ user.cur_bill_item }}</p>
+                    <p>{{ DashboardInfo.Forms.PayBill.title }}: <span class="light-blue">${{ user.cur_bill_amount }}</span></p>
+                    <button class="btn" type="submit">{{ DashboardInfo.Forms.PayBill.submit_button }}</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

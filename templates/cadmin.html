@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAdmin - {{ Info.Header.title }}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2 style="margin-bottom: 20px;">{{ Info.Header.title }}</h2>
+        <nav>
+            {% for bar in bars %}
+            {{ bar|safe }}
+            {% endfor %}
+            <form action="/logout/" method="post">
+                <button class="btn btn-danger" style="width: 100%; margin-top: 20px;">{{ Info.Header.logout }}</button>
+            </form>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="box">
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            {% endif %}
+            </ul>
+            <h2>{{ CAdminInfo.SendBill.title }}</h2>
+            <form method="POST" action="/billplayer/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.BillType.title }}</label>
+                    <select name="type" required>
+                        <option disabled>{{ CAdminInfo.SendBill.BillType.first_select_option }}...</option>
+                        {% for bill_type in CAdminInfo.SendBill.BillType.types %}
+                        <option value="{{ bill_type }}">{{ bill_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.item_title }}</label>
+                    <input type="text" name="item" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.amount_title }}</label>
+                    <input type="number" name="amount" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.BillReceiver.title }}</label>
+                    <select name="receiver" required>
+                        <option disabled>{{ CAdminInfo.SendBill.BillReceiver.first_select_option }}...</option>
+                        {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">{{ CAdminInfo.SendBill.submit_button }}</button>
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>{{ CAdminInfo.Send200.title }}</h2>
+            <form action="/send200/" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ CAdminInfo.Send200.Player.title }}</label>
+                    <select name="player" required>
+                        <option disabled>{{ CAdminInfo.Send200.Player.first_select_option }}...</option>
+                        {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">{{ CAdminInfo.Send200.submit_button }}</button>
+            </form>
+        </div>
+        
+        <div class="box">
+            <h2>{{ CAdminInfo.SendBankMoney.title }}</h2>
+            <form method="POST" action="/sendbankmoney/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBankMoney.amount_title }}</label>
+                    <input type="number" min="0" name="amount" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBankMoney.Player.title }}</label>
+                    <select name="player" required>
+                        <option disabled>{{ CAdminInfo.SendBankMoney.Player.first_select_option }}...</option>
+                        {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">{{ CAdminInfo.SendBankMoney.submit_button }}</button>
+            </form>
+        </div>
+        
+        <div class="box">
+            <h2>{{ CAdminInfo.SetBalance.title }}</h2>
+            <form method="POST" action="/setbalance/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SetBalance.amount_title }}</label>
+                    <input type="number" name="amount" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SetBalance.Player.title }}</label>
+                    <select name="player" required>
+                        <option disabled>{{ CAdminInfo.SetBalance.Player.first_select_option }}...</option>
+                        {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">{{ CAdminInfo.SetBalance.submit_button }}</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

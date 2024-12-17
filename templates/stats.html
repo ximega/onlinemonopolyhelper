@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ Info.Header.title }}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2 style="margin-bottom: 20px;">{{ Info.Header.title }}</h2>
+        <nav>
+            {% for bar in bars %}
+            {{ bar|safe }}
+            {% endfor %}
+            <form action="/logout/" method="post">
+                <button class="btn btn-danger" style="width: 100%; margin-top: 20px;">{{ Info.Header.logout }}</button>
+            </form>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="box">
+            <h2>{{ StatsInfo.title }}</h2>
+            <div style="margin: 20px 0;">
+                <h3>{{ StatsInfo.General.title }}</h3>
+                <p>{{ StatsInfo.General.player_count }}: <strong><span class="stat-highlight">{{ player_count }}</span></strong></p>
+                <p>{{ StatsInfo.General.wealthiest_player }}: <strong><span class="stat-highlight">{{ wealthiest_player.username }} (${{ wealthiest_player.money }})</span></strong></p>
+                <p>{{ StatsInfo.General.peak_balance }}: <strong><span class="stat-highlight">{{ peak_balance_holder }} (${{ peak_balance }})</span></strong></p>
+                <h3>{{ StatsInfo.Personal.title }}</h3>
+                <p>{{ StatsInfo.Personal.peak_balance }}: <strong><span class="stat-highlight">${{ user.peak_balance }}</span></strong></p>
+                <p>{{ StatsInfo.Personal.largest_sent }}: <strong><span class="stat-highlight">${{ largest_sent }}</span></strong></p>
+                <p>{{ StatsInfo.Personal.largest_receiver }}: <strong><span class="stat-highlight">{{ largest_receiver }}</span></strong></p>
+                <p>{{ StatsInfo.Personal.largest_received }}: <strong><span class="stat-highlight">${{ largest_received }}</span></strong></p>
+                <p>{{ StatsInfo.Personal.largest_sender }}: <strong><span class="stat-highlight">{{ largest_sender }}</span></strong></p>
+                <p>{{ StatsInfo.Personal.largest_bill_paid }}: <strong><span class="stat-highlight">${{ user.largest_bill_paid }}</span></strong></p>
+                <p>{{ StatsInfo.Personal.bills_paid }}: <strong><span class="stat-highlight">{{ user.bills_paid }}</span></strong></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
