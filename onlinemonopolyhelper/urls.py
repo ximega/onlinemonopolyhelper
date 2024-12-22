@@ -35,5 +35,11 @@ urlpatterns = [
     path('send200/', send_200, name='send_200'),
     path('sendbankmoney/', send_bank_money, name='send_bank_money'),
     path('setbalance/', set_balance, name='set_balance'),
-    path('stats/', stats_view, name='stats')
+    path('stats/', stats_view, name='stats'),
+    path('requestregionbuy/', request_region_buy, name='request_region_buy'),
+    path('requesthotelbuild/', request_hotel_build, name='request_hotel_build'),
+    path('confirmbuyregion/', confirm_buy_region, name='confirm_buy_region'),
+    path('confirmbuildhotel/', confirm_build_hotel, name='confirm_build_hotel'),
+    path('cancelbuyregion/', cancel_buy_region, name='cancel_buy_region'),
+    path('cancelbuildhotel/', cancel_build_hotel, name='cancel_build_hotel'),
 ]

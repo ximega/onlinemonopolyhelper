@@ -1,0 +1,6 @@
+{
+    "name": "scams",
+    "regions_count": 23,
+    "initial_balance": 500,
+    "max_hotels_on_region": 2
+}

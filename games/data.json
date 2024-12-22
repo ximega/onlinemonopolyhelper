@@ -1,0 +1,9 @@
+{
+    "chosen_type_path": "scams",
+    "game_types": {
+        "scams": {
+            "path": "./scams"
+        }
+    },
+    "bought_regions": []
+}

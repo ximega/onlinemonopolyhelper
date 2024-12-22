@@ -4,11 +4,11 @@ from django.http import HttpRequest, HttpResponse
 
 from onlinemonopolyhelper.info import Info
 from .info import DashboardInfo
-from .models import CustomUser
+from .models import CustomUser, RegionBuyRequest, HotelBuildRequest, REGIONS_LIST, MAX_HOTEL_COUNT, REGIONS_BUY_PRICES, REGIONS_HOTEL_PRICES
 
 def dashboard_view(request: HttpRequest) -> HttpResponse: 
     if request.method == "POST":
-        return redirect('/dashboard')
+        return redirect('/dashboard/')
 
     if not request.user.is_authenticated:
         return redirect('/login/')
@@ -21,6 +21,9 @@ def dashboard_view(request: HttpRequest) -> HttpResponse:
         'bars': Info.Sidebar.give_other_bars('/dashboard/', is_staff=request.user.is_staff), # type: ignore
         'user': request.user,
         'top_players': top_players,
+        'other_players': [player for player in top_players if player.username != request.user.username], # type: ignore
+        'regions': REGIONS_LIST,
+        'max_hotel_count': MAX_HOTEL_COUNT,
     }
     
     return render(request, 'dashboard.html', ctx)
@@ -30,7 +33,7 @@ def redirect_to_dashboard(request: HttpRequest) -> HttpResponse:
 
 def send_money(request: HttpRequest) -> HttpResponse: 
     if request.method != "POST":
-        return redirect('/dashboard')
+        return redirect('/dashboard/')
     
     if not request.user.is_authenticated:
         return redirect('/login/')
@@ -66,7 +69,7 @@ def send_money(request: HttpRequest) -> HttpResponse:
 
 def pay_bill(request: HttpRequest) -> HttpResponse: 
     if request.method != "POST":
-        return redirect('/dashboard')
+        return redirect('/dashboard/')
     
     if not request.user.is_authenticated:
         return redirect('/login/')
@@ -76,4 +79,40 @@ def pay_bill(request: HttpRequest) -> HttpResponse:
     
     request.user.pay_bill() # type: ignore
 
-    return redirect('/dashboard')
+    return redirect('/dashboard/')
+
+def request_region_buy(request: HttpRequest) -> HttpResponse:
+    if request.method != "POST":
+        return redirect('/dashboard/')
+    
+    if not request.user.is_authenticated:
+        return redirect('/login/')
+    
+    region_name = request.POST.get('region_name')
+
+    if request.user.money < REGIONS_BUY_PRICES[region_name]: # type: ignore
+        return render(request, 'blankpage.html', {'alert_msg': DashboardInfo.Errors.not_enough_money})
+
+    buy_request = RegionBuyRequest(region_name=region_name, sent_by=request.user.username) # type: ignore
+    buy_request.save()
+
+    return redirect('/dashboard/')
+    
+def request_hotel_build(request: HttpRequest) -> HttpResponse:
+    if request.method != "POST":
+        return redirect('/dashboard/')
+    
+    if not request.user.is_authenticated:
+        return redirect('/login/')
+    
+    region_name = request.POST.get('region_name')
+    hotel_count = int(request.POST.get('hotel_count')) # type: ignore
+
+    if request.user.money < REGIONS_HOTEL_PRICES[region_name] * hotel_count: # type: ignore
+        return render(request, 'blankpage.html', {'alert_msg': DashboardInfo.Errors.not_enough_money})
+
+    build_request = HotelBuildRequest(region_name=region_name, sent_by=request.user.username, count=hotel_count) # type: ignore
+    build_request.save()
+
+    return redirect('/dashboard/')
+

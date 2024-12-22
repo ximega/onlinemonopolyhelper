@@ -5,6 +5,21 @@ class CAdminInfo:
         not_valid_amount = "Число должно делиться на 10"
         receiver_already_billed = "Получать счета уже имеет счет и не может получить второй пока не оплатит первый"
 
+    class Requests:
+        class BuyRegion:
+            title = "Запросы на покупку региона"
+            region_name = "Название региона"
+            sent_by = "Отправлен"
+
+        class BuildHotel:
+            title = "Запросы на постройку отелей"
+            region_name = "Название региона"
+            sent_by = "Отправлен"
+            count = "Количество отелей"
+
+        confirm_button = "Подтвердить"
+        cancel_button = "Отказать"
+
     class SendBill:
         title = "Выставить счет"
 
@@ -12,7 +27,6 @@ class CAdminInfo:
             title = "Тип"
             first_select_option = "Выберите тип"
             types: list[str] = [
-                'Регион',
                 'Штраф',
             ]
 

@@ -23,13 +23,23 @@ class DashboardInfo:
             title = "Отправить деньги"
             input_amount = "Сумма"
             input_receiver = "Получатель"
-            select_receiver_first_option = "Выбрать игрока"
             submit_button = "Отправить"
 
         class PayBill:
             title = "Оплатить счет"
             amount_placeholder = "Сумма"
             submit_button = "Оплатить"
+
+        class RequestRegionBuy:
+            title = "Запросить покупку региона"
+            input_region_name = "Регион"
+            submit_button = "Запросить"
+
+        class RequestHotelBuild:
+            title = "Запросить постройку отеля"
+            input_region_name = "Регион"
+            input_hotel_count = "Количество"
+            submit_button = "Запросить"
 
     class Errors:
         amount_not_digit = "Вы ввели не числовое значение"

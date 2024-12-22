@@ -20,6 +20,49 @@
         </nav>
     </div>
     <div class="main-content">
+        {% if buyrequests %}
+        <div class="box">
+            <h2>{{ CAdminInfo.Requests.BuyRegion.title }}</h2>
+            {% for request in buyrequests %}
+            <div class="bill-card">
+                <p>{{ CAdminInfo.Requests.BuyRegion.region_name }}: <span class="light-blue">{{ request.region_name }}</span></p>
+                <p>{{ CAdminInfo.Requests.BuyRegion.sent_by }}: <span class="light-blue">{{ request.sent_by }}</span></p>
+                <form method="POST" action="/confirmbuyregion/">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ request.id }}" name="request_id">
+                    <button class="btn confirm-btn" type="submit">{{ CAdminInfo.Requests.confirm_button }}</button>
+                </form>
+                <form method="POST" action="/cancelbuyregion/">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ request.id }}" name="request_id">
+                    <button class="btn cancel-btn" type="submit">{{ CAdminInfo.Requests.cancel_button }}</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if buildrequests %}
+        <div class="box">
+            <h2>{{ CAdminInfo.Requests.BuildHotel.title }}</h2>
+            {% for request in buildrequests %}
+            <div class="bill-card">
+                <p>{{ CAdminInfo.Requests.BuildHotel.region_name }}: <span class="light-blue">{{ request.region_name }}</span></p>
+                <p>{{ CAdminInfo.Requests.BuildHotel.sent_by }}: <span class="light-blue">{{ request.sent_by }}</span></p>
+                <p>{{ CAdminInfo.Requests.BuildHotel.count }}: <span class="light-blue">{{ request.count }}</span></p>
+                <form method="POST" action="/confirmbuildhotel/">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ request.id }}" name="request_id">
+                    <button class="btn confirm-btn" type="submit">{{ CAdminInfo.Requests.confirm_button }}</button>
+                </form>
+                <form method="POST" action="/cancelbuildhotel/">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ request.id }}" name="request_id">
+                    <button class="btn cancel-btn" type="submit">{{ CAdminInfo.Requests.cancel_button }}</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         <div class="box">
             {% if messages %}
             <ul class="messages">

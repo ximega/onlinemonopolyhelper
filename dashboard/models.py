@@ -1,19 +1,85 @@
 import json
 import logging
+import os
 from termcolor import colored
-from typing import overload
+from typing import overload, Any
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-INIT_MONEY = 700
+GAMES_PATH = os.path.join(os.getcwd(), 'games')
+GAMES_MAIN_DATA_PATH = os.path.join(GAMES_PATH, 'data.json')
+
+def ask_to_choose_game_type(game_types: Any) -> str:
+    msg = "Choose of the following game types to continue:\n"
+    for index, game_k in enumerate(game_types.keys(), start=1):
+        msg += f"{index}) {game_k}"
+    print(msg)
+    inp: str = input()
+    while not inp.isdigit():
+        print('Enter a number!')
+        inp = input()
+    return game_types[list(game_types.keys())[int(inp)-1]]['path']
+
+def read_main_data() -> Any:
+    return json.loads(open(GAMES_MAIN_DATA_PATH, 'r').read())
+
+def get_chosen_type_path() -> str:
+    data = read_main_data()
+    chosen_type_path: str = data['chosen_type_path']
+    if chosen_type_path == "":
+        chosen_type_path = ask_to_choose_game_type(data['game_types'])
+        wfile = open(GAMES_MAIN_DATA_PATH, 'w')
+        data['chosen_type_path'] = chosen_type_path
+        wfile.write(json.dumps(data, indent=4))
+    return os.path.join(GAMES_PATH, chosen_type_path)
+
+def get_all_regions_list(path: str) -> list[str]:
+    return json.loads(open(os.path.join(path, 'regions', 'list.json'), 'r').read())
+
+def get_regions_buy_prices(path: str) -> dict[str, int]:
+    return json.loads(open(os.path.join(path, 'regions', 'buy.json'), 'r').read())
+
+def get_regions_hotel_prices(path: str) -> dict[str, int]:
+    return json.loads(open(os.path.join(path, 'regions', 'hotels.json'), 'r').read())
+
+def get_initial_balance(path: str) -> int:
+    data = json.loads(open(os.path.join(path, 'data.json'), 'r').read())
+    return data['initial_balance']
+
+def get_max_hotel_count(path: str) -> str:
+    data = json.loads(open(os.path.join(path, 'data.json'), 'r').read())
+    return data['max_hotels_on_region']
+
+def get_bought_regions() -> list[str]:
+    data = read_main_data()
+    return data['bought_regions']
+
+def add_bought_region(region_name: str) -> None:
+    data = read_main_data()
+    data['bought_regions'].append(region_name)
+    wfile = open(GAMES_MAIN_DATA_PATH, 'w')
+    wfile.write(json.dumps(data))
+
+def remove_bought_region(region_name: str) -> None:
+    data = read_main_data()
+    data['bought_regions'].remove(region_name)
+    wfile = open(GAMES_MAIN_DATA_PATH, 'w')
+    wfile.write(json.dumps(data))
+
+CHOSEN_TYPE_PATH: str = get_chosen_type_path()
+REGIONS_LIST: list[str] = get_all_regions_list(CHOSEN_TYPE_PATH)
+REGIONS_BUY_PRICES: dict[str, int] = get_regions_buy_prices(CHOSEN_TYPE_PATH)
+REGIONS_HOTEL_PRICES: dict[str, int] = get_regions_hotel_prices(CHOSEN_TYPE_PATH)
+INITIAL_BALANCE = get_initial_balance(CHOSEN_TYPE_PATH)
+MAX_HOTEL_COUNT = get_max_hotel_count(CHOSEN_TYPE_PATH)
 
 type AllCategory = dict[str, int]
 type Money = int
 type PlayerName = str
 
 class CustomUser(AbstractUser):
-    money = models.IntegerField(default=INIT_MONEY)
+    money = models.IntegerField(default=INITIAL_BALANCE)
     last_sent = models.IntegerField(default=0)
     last_sent_to = models.TextField(default="Nobody")
     last_received = models.IntegerField(default=0)
@@ -26,7 +92,7 @@ class CustomUser(AbstractUser):
     cur_bill_amount = models.IntegerField(default=0)
     
     # for statistics
-    peak_balance = models.IntegerField(default=INIT_MONEY)
+    peak_balance = models.IntegerField(default=INITIAL_BALANCE)
     # player sends
     all_sent = models.TextField(default="{}")
     # player receives
@@ -127,3 +193,18 @@ class CustomUser(AbstractUser):
         self.update_received(amount, sender_str)
         self.save()
         self.logout(f'{self.hl_name()} received ${amount} from {self.hl_name(sender_str)}')
+
+class RegionBuyRequest(models.Model):
+    region_name = models.TextField()
+    sent_by = models.TextField()
+
+    def __str__(self) -> str:
+        return f"{self.region_name} - {self.sent_by}"
+
+class HotelBuildRequest(models.Model):
+    region_name = models.TextField()
+    sent_by = models.TextField()
+    count = models.IntegerField()
+
+    def __str__(self) -> str:
+        return f"{self.region_name} - {self.sent_by} - {self.count}"
