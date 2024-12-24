@@ -33,6 +33,15 @@
                 {{ DashboardInfo.cur_balance }}: <span class="light-blue">${{ user.money }}</span>
             </h1>
         </div>
+
+        {% if user_regions %}
+        <div class="box">
+            <h3>Во владении:</h3>
+            {% for region in user_regions %}
+            <h4 class="light-blue">{{ region }}</h4>
+            {% endfor %}
+        </div>
+        {% endif %}
         
         <div class="box">
             <h2>{{ DashboardInfo.top_players_title }}</h2>
@@ -56,6 +65,44 @@
                 <h3>{{ DashboardInfo.RecentTransactions.Paid.title }}: <span class="light-blue">${{ user.last_paid }}</span> {{ DashboardInfo.RecentTransactions.Paid.suffix }} {{ user.last_paid_for }}</h3>
             </div>
         </div>
+
+        {% if user.is_billed %}
+        <div class="box">
+            <h2>{{ DashboardInfo.Forms.PayBill.title }}</h2>
+            <div class="bill-card">
+                <form method="POST" action="/paybill/">
+                    {% csrf_token %}
+                    <h3>{{ user.cur_bill_type }}</h3>
+                    <p>{{ user.cur_bill_item }}</p>
+                    <p>{{ DashboardInfo.Forms.PayBill.title }}: <span class="light-blue">${{ user.cur_bill_amount }}</span></p>
+                    <button class="btn confirm-btn" type="submit">{{ DashboardInfo.Forms.PayBill.submit_button }}</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if incoming_transfer_requests %}
+        <div class="box">
+            <h2>{{ DashboardInfo.Forms.TransferRequest.title }}</h2>
+            {% for request in incoming_transfer_requests %}
+            <div class="bill-card">
+                <h2>{{ DashboardInfo.Forms.TransferRequest.region_name }}: <span class="light-blue">{{ request.region_name }}</span></h2>
+                <h3>{{ DashboardInfo.Forms.TransferRequest.sender_name }}: <span class="light-blue">{{ request.sender }}</span></h3>
+                <h3>{{ DashboardInfo.Forms.TransferRequest.price }}: <span class="light-blue">{{ request.price }}</span></h3>
+                <form action="/userconfirmtransferrequest/" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                    <button type="submit" class="btn confirm-btn">{{ DashboardInfo.Forms.TransferRequest.confirm_button }}</button>
+                </form>
+                <form action="/usercanceltransferrequest/" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                    <button type="submit" class="btn cancel-btn">{{ DashboardInfo.Forms.TransferRequest.cancel_button }}</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         
         <div class="box">
             <h2>{{ DashboardInfo.Forms.SendMoney.title }}</h2>
@@ -76,21 +123,6 @@
                 <button type="submit" class="btn">{{ DashboardInfo.Forms.SendMoney.submit_button }}</button>
             </form>
         </div>
-        
-        {% if user.is_billed %}
-        <div class="box">
-            <h2>{{ DashboardInfo.Forms.PayBill.title }}</h2>
-            <div class="bill-card">
-                <form method="POST" action="/paybill/">
-                    {% csrf_token %}
-                    <h3>{{ user.cur_bill_type }}</h3>
-                    <p>{{ user.cur_bill_item }}</p>
-                    <p>{{ DashboardInfo.Forms.PayBill.title }}: <span class="light-blue">${{ user.cur_bill_amount }}</span></p>
-                    <button class="btn" type="submit">{{ DashboardInfo.Forms.PayBill.submit_button }}</button>
-                </form>
-            </div>
-        </div>
-        {% endif %}
 
         <div class="box">
             <h2>{{ DashboardInfo.Forms.RequestRegionBuy.title }}</h2>
@@ -99,7 +131,7 @@
                 <div class="form-group">
                     <label>{{ DashboardInfo.Forms.RequestRegionBuy.input_region_name }}</label>
                     <select name="region_name" required>
-                        {% for region in regions %}
+                        {% for region in available_regions %}
                         <option value="{{ region }}">{{ region }}</option>
                         {% endfor %}
                     </select>
@@ -115,7 +147,7 @@
                 <div class="form-group">
                     <label>{{ DashboardInfo.Forms.RequestHotelBuild.input_region_name }}</label>
                     <select name="region_name" required>
-                        {% for region in regions %}
+                        {% for region in user_regions %}
                         <option value="{{ region }}">{{ region }}</option>
                         {% endfor %}
                     </select>
@@ -125,6 +157,50 @@
                     <input type="number" name="hotel_count" value=1 max="{{ max_hotel_count }}" min=1>
                 </div>
                 <button class="btn" type="submit">{{ DashboardInfo.Forms.RequestHotelBuild.submit_button }}</button>
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>{{ DashboardInfo.Forms.SellRegion.title }}</h2>
+            <form action="/sellregion/" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ DashboardInfo.Forms.SellRegion.input_region_name }}</label>
+                    <select name="region_name" required>
+                        {% for region in user_regions %}
+                        <option value="{{ region }}">{{ region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn" type="submit">{{ DashboardInfo.Forms.SellRegion.submit_button }}</button>
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>{{ DashboardInfo.Forms.TransferRegion.title }}</h2>
+            <form action="/transferregion/" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ DashboardInfo.Forms.TransferRegion.input_region_name }}</label>
+                    <select name="region_name" required>
+                        {% for region in user_regions %}
+                        <option value="{{ region }}">{{ region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>{{ DashboardInfo.Forms.TransferRegion.input_receiver_name }}</label>
+                    <select name="receiver_name" required>
+                        {% for player in other_players %}
+                        <option value="{{ player.username }}">{{ player.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>{{ DashboardInfo.Forms.SellRegion.input_price }}</label>
+                    <input type="number" name="price" min=10>
+                </div>
+                <button type="submit" class="btn">{{ DashboardInfo.Forms.SellRegion.submit_button }}</button>
             </form>
         </div>
     </div>

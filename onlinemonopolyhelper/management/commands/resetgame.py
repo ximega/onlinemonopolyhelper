@@ -1,6 +1,6 @@
 from typing import Any
 from django.core.management.base import BaseCommand
-from dashboard.models import CustomUser, INITIAL_BALANCE
+from dashboard.models import CustomUser, INITIAL_BALANCE, RegionBuyRequest, HotelBuildRequest
 
 class Command(BaseCommand):
     def handle(self, *args: Any, **kwargs: Any) -> None:
@@ -21,6 +21,13 @@ class Command(BaseCommand):
             user.all_received = "{}"
             user.largest_bill_paid = 0
             user.bills_paid = 0
+            user.regions_have = "[]"
             user.save()
         else:
             print("All users' data reset")
+
+        for requests in (RegionBuyRequest, HotelBuildRequest):
+            for request in requests.objects.all():
+                request.delete()
+        else:
+            print('All request deleted')

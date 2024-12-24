@@ -17,6 +17,13 @@ class CAdminInfo:
             sent_by = "Отправлен"
             count = "Количество отелей"
 
+        class TransferRegion:
+            title = "Запросы на передачу регионов"
+            region_name = "Название региона"
+            sender_name = "Отправитель"
+            receiver_name = "Получатель"
+            price = "Договоренная цена"
+
         confirm_button = "Подтвердить"
         cancel_button = "Отказать"
 

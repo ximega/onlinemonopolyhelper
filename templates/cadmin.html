@@ -41,6 +41,7 @@
             {% endfor %}
         </div>
         {% endif %}
+
         {% if buildrequests %}
         <div class="box">
             <h2>{{ CAdminInfo.Requests.BuildHotel.title }}</h2>
@@ -63,6 +64,31 @@
             {% endfor %}
         </div>
         {% endif %}
+
+        {% if transfer_requests %}
+        <div class="box">
+            {% for request in transfer_requests %}
+            <h2>{{ CAdminInfo.Requests.TransferRegion.title }}</h2>
+            <div class="bill-card">
+                <h2>{{ CAdminInfo.Requests.TransferRegion.region_name }}: <span class="light-blue">{{ request.region_name }}</span></h2>
+                <h3>{{ CAdminInfo.Requests.TransferRegion.sender_name }} <span class="light-blue">{{ request.sender }}</span></h3>
+                <h3>{{ CAdminInfo.Requests.TransferRegion.receiver_name }} <span class="light-blue">{{ request.receiver }}</span></h3>
+                <h3>{{ CAdminInfo.Requests.TransferRegion.receiver_name }}: <span class="light-blue">{{ request.price }}</span></h3>
+                <form action="/confirmtransferrequest/" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                    <button type="submit" class="btn confirm-btn">{{ CAdminInfo.Requests.confirm_button }}</button>
+                </form>
+                <form action="/canceltransferrequest/" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                    <button type="submit" class="btn cancel-btn">{{ CAdminInfo.Requests.cancel_button }}</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="box">
             {% if messages %}
             <ul class="messages">

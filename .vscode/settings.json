@@ -2,14 +2,31 @@
     "cSpell.words": [
         "billplayer",
         "blankpage",
+        "buildrequests",
+        "buyrequests",
         "cadmin",
+        "cancelbuildhotel",
+        "cancelbuyregion",
+        "canceltransferregion",
+        "canceltransferrequest",
+        "confirmbuildhotel",
+        "confirmbuyregion",
+        "confirmtransferregion",
+        "confirmtransferrequest",
         "csettings",
         "doesnot",
         "gethostname",
         "onlinemonopolyhelper",
         "paybill",
+        "requesthotelbuild",
+        "requestregionbuy",
+        "sellregion",
         "sendbankmoney",
         "sendmoney",
-        "setbalance"
+        "setbalance",
+        "transferregion",
+        "usercanceltransferrequest",
+        "userconfirmtransferrequest",
+        "СAdmin"
     ]
 }

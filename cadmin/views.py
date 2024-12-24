@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 
-from dashboard.models import CustomUser, RegionBuyRequest, HotelBuildRequest, REGIONS_BUY_PRICES, REGIONS_HOTEL_PRICES
+from dashboard.models import (
+    CustomUser, RegionBuyRequest, HotelBuildRequest, TransferRegionRequest,
+    REGIONS_BUY_PRICES, REGIONS_HOTEL_PRICES,
+    add_bought_region
+)
 from onlinemonopolyhelper.info import Info
 from .info import CAdminInfo
 
@@ -22,6 +26,7 @@ def cadmin_view(request: HttpRequest) -> HttpResponse:
         'users': CustomUser.objects.all().order_by('-money'),
         'buyrequests': RegionBuyRequest.objects.all(),
         'buildrequests': HotelBuildRequest.objects.all(),
+        'transfer_requests': TransferRegionRequest.objects.filter(approved_by_receiver=True),
     }
 
     return render(request, 'cadmin.html', ctx)
@@ -191,6 +196,8 @@ def confirm_buy_region(request: HttpRequest) -> HttpResponse:
     user = CustomUser.objects.get(username=buy_request.sent_by)
 
     user.money -= REGIONS_BUY_PRICES[buy_request.region_name]
+    user.add_region(buy_request.region_name)
+    add_bought_region(buy_request.region_name)
     user.save()
 
     user.logout(f"{user.hl_name()} has bought a region {buy_request.region_name}")
@@ -218,3 +225,42 @@ def confirm_build_hotel(request: HttpRequest) -> HttpResponse:
     build_request.delete()
 
     return redirect('/cadmin/')
+
+def confirm_transfer_region(request: HttpRequest) -> HttpResponse:
+    if request.method != "POST":
+        return redirect('/cadmin/')
+    
+    if not request.user.is_authenticated:
+        return redirect('/login/')
+    
+    request_id = int(request.POST.get('request_id')) # type: ignore
+
+    transfer_request: TransferRegionRequest = TransferRegionRequest.objects.get(id=request_id)
+    
+    sender: CustomUser = CustomUser.objects.get(username=transfer_request.sender)
+    receiver: CustomUser = CustomUser.objects.get(username=transfer_request.receiver)
+
+    sender.money += transfer_request.price
+    receiver.money -= transfer_request.price
+
+    sender.remove_region(transfer_request.region_name)
+    sender.save()
+    receiver.add_region(transfer_request.region_name)
+    receiver.save()
+
+    transfer_request.delete()
+
+    return redirect('/cadmin/')
+    
+def cancel_transfer_region(request: HttpRequest) -> HttpResponse:
+    if request.method != "POST":
+        return redirect('/cadmin/')
+    
+    if not request.user.is_authenticated:
+        return redirect('/login/')
+    
+    request_id = int(request.POST.get('request_id')) # type: ignore
+
+    TransferRegionRequest.objects.get(id=request_id).delete()
+
+    return redirect('/dashboard/')

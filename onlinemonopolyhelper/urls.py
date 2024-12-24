@@ -42,4 +42,10 @@ urlpatterns = [
     path('confirmbuildhotel/', confirm_build_hotel, name='confirm_build_hotel'),
     path('cancelbuyregion/', cancel_buy_region, name='cancel_buy_region'),
     path('cancelbuildhotel/', cancel_build_hotel, name='cancel_build_hotel'),
+    path('sellregion/', sell_region, name='sell_region'),
+    path('transferregion/', transfer_region, name='transfer_region'),
+    path('userconfirmtransferrequest/', user_confirm_transfer_request, name='user_confirm_transfer_request'),
+    path('usercanceltransferrequest/', user_cancel_transfer_request, name='user_cancel_transfer_request'),
+    path('confirmtransferrequest/', confirm_transfer_region, name='confirm_transfer_region'),
+    path('canceltransferrequest/', cancel_transfer_region, name='cancel_transfer_region'),
 ]

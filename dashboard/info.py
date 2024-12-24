@@ -41,6 +41,26 @@ class DashboardInfo:
             input_hotel_count = "Количество"
             submit_button = "Запросить"
 
+        class SellRegion:
+            title = "Продать регион банку"
+            input_region_name = "Регион"
+            submit_button = "Продать"
+
+        class TransferRegion:
+            title = "Передать регион"
+            input_region_name = "Регион"
+            input_receiver_name = "Получатель"
+            input_price = "Договоренная цена"
+            submit_button = "Отправить"
+
+        class TransferRequest:
+            title = "Входящие предложения на закупку регионов"
+            region_name = "Регион"
+            sender_name = "Отправитель"
+            price = "Цена"
+            confirm_button = "Принять"
+            cancel_button = "Отказать"
+
     class Errors:
         amount_not_digit = "Вы ввели не числовое значение"
         receiver_does_not_exist = "Получатель не существует"

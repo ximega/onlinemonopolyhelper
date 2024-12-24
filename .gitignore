@@ -7,3 +7,4 @@ backups
 logs
 .sqlite3
 .db
+db.sqlite3

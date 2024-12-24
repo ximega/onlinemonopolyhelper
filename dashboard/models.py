@@ -31,7 +31,7 @@ def get_chosen_type_path() -> str:
         chosen_type_path = ask_to_choose_game_type(data['game_types'])
         wfile = open(GAMES_MAIN_DATA_PATH, 'w')
         data['chosen_type_path'] = chosen_type_path
-        wfile.write(json.dumps(data, indent=4))
+        wfile.write(json.dumps(data, indent=4, ensure_ascii=False))
     return os.path.join(GAMES_PATH, chosen_type_path)
 
 def get_all_regions_list(path: str) -> list[str]:
@@ -59,13 +59,13 @@ def add_bought_region(region_name: str) -> None:
     data = read_main_data()
     data['bought_regions'].append(region_name)
     wfile = open(GAMES_MAIN_DATA_PATH, 'w')
-    wfile.write(json.dumps(data))
+    wfile.write(json.dumps(data, ensure_ascii=False))
 
 def remove_bought_region(region_name: str) -> None:
     data = read_main_data()
     data['bought_regions'].remove(region_name)
     wfile = open(GAMES_MAIN_DATA_PATH, 'w')
-    wfile.write(json.dumps(data))
+    wfile.write(json.dumps(data, ensure_ascii=False))
 
 CHOSEN_TYPE_PATH: str = get_chosen_type_path()
 REGIONS_LIST: list[str] = get_all_regions_list(CHOSEN_TYPE_PATH)
@@ -90,6 +90,7 @@ class CustomUser(AbstractUser):
     cur_bill_type = models.TextField(default="None")
     cur_bill_item = models.TextField(default="None")
     cur_bill_amount = models.IntegerField(default=0)
+    regions_have = models.TextField(default="[]")
     
     # for statistics
     peak_balance = models.IntegerField(default=INITIAL_BALANCE)
@@ -101,13 +102,27 @@ class CustomUser(AbstractUser):
     largest_bill_paid = models.IntegerField(default=0)
     bills_paid = models.IntegerField(default=0)
 
+    def add_region(self, region_name: str) -> None:
+        data: list[str] = json.loads(self.regions_have)
+        data.append(region_name)
+        self.regions_have = json.dumps(data, ensure_ascii=False)
+
+    def remove_region(self, region_name: str) -> None:
+        data: list[str] = json.loads(self.regions_have)
+        print(data, region_name)
+        data.remove(region_name)
+        self.regions_have = json.dumps(data, ensure_ascii=False)
+
+    def get_regions(self) -> list[str]:
+        return json.loads(self.regions_have)
+
     def update_sent(self, amount: int, receiver: str) -> None:
         all_sent: AllCategory = json.loads(self.all_sent)
         if receiver in all_sent.keys():
             all_sent[receiver] += amount
         else:
             all_sent[receiver] = amount
-        self.all_sent = json.dumps(all_sent)
+        self.all_sent = json.dumps(all_sent, ensure_ascii=False)
 
     def get_largest_sent(self) -> tuple[PlayerName, Money]:
         all_sent: AllCategory = json.loads(self.all_sent)
@@ -127,7 +142,7 @@ class CustomUser(AbstractUser):
             all_received[sender] += amount
         else:
             all_received[sender] = amount
-        self.all_received = json.dumps(all_received)
+        self.all_received = json.dumps(all_received, ensure_ascii=False)
 
     def get_largest_received(self) -> tuple[PlayerName, Money]:
         all_received: AllCategory = json.loads(self.all_received)
@@ -208,3 +223,13 @@ class HotelBuildRequest(models.Model):
 
     def __str__(self) -> str:
         return f"{self.region_name} - {self.sent_by} - {self.count}"
+    
+class TransferRegionRequest(models.Model):
+    sender = models.TextField()
+    receiver = models.TextField()
+    approved_by_receiver = models.BooleanField()
+    region_name = models.TextField()
+    price = models.IntegerField()
+
+    def __str__(self) -> str:
+        return f"{self.region_name} by {self.sender} to {self.receiver} for ${self.price} (approved: {self.approved_by_receiver})"
