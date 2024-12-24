@@ -1,1 +1,1 @@
-{"chosen_type_path": "scams", "game_types": {"scams": {"path": "./scams"}}, "bought_regions": ["Петергоф", "Ленинградский проспект", "Смоленская улица", "Дворцовая площадь", "Кузнецкий мост", "Театральный проезд"]}
+{"chosen_type_path": "./scams", "game_types": {"scams": {"path": "./scams"}}, "bought_regions": ["Петергоф"]}

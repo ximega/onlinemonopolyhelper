@@ -1,6 +1,11 @@
+import json
 from typing import Any
 from django.core.management.base import BaseCommand
-from dashboard.models import CustomUser, INITIAL_BALANCE, RegionBuyRequest, HotelBuildRequest
+from dashboard.models import (
+    CustomUser, RegionBuyRequest, HotelBuildRequest,
+    INITIAL_BALANCE, GAMES_MAIN_DATA_PATH,
+    read_main_data,
+)
 
 class Command(BaseCommand):
     def handle(self, *args: Any, **kwargs: Any) -> None:
@@ -31,3 +36,14 @@ class Command(BaseCommand):
                 request.delete()
         else:
             print('All request deleted')
+
+        try:
+            data = read_main_data()
+            data['chosen_type_path'] = ""
+            data['bought_regions'] = []
+            wfile = open(GAMES_MAIN_DATA_PATH, 'w')
+            wfile.write(json.dumps(data, indent=4))
+        except Exception:
+            print(f'Failed to reset {GAMES_MAIN_DATA_PATH}')
+
+        

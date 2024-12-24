@@ -88,48 +88,7 @@
             {% endfor %}
         </div>
         {% endif %}
-
-        <div class="box">
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-            {% endif %}
-            </ul>
-            <h2>{{ CAdminInfo.SendBill.title }}</h2>
-            <form method="POST" action="/billplayer/">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label>{{ CAdminInfo.SendBill.BillType.title }}</label>
-                    <select name="type" required>
-                        <option disabled>{{ CAdminInfo.SendBill.BillType.first_select_option }}...</option>
-                        {% for bill_type in CAdminInfo.SendBill.BillType.types %}
-                        <option value="{{ bill_type }}">{{ bill_type }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>{{ CAdminInfo.SendBill.item_title }}</label>
-                    <input type="text" name="item" required>
-                </div>
-                <div class="form-group">
-                    <label>{{ CAdminInfo.SendBill.amount_title }}</label>
-                    <input type="number" name="amount" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label>{{ CAdminInfo.SendBill.BillReceiver.title }}</label>
-                    <select name="receiver" required>
-                        <option disabled>{{ CAdminInfo.SendBill.BillReceiver.first_select_option }}...</option>
-                        {% for user in users %}
-                        <option value="{{ user.username }}">{{ user.username }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn">{{ CAdminInfo.SendBill.submit_button }}</button>
-            </form>
-        </div>
-
+        
         <div class="box">
             <h2>{{ CAdminInfo.Send200.title }}</h2>
             <form action="/send200/" method="POST">
@@ -165,6 +124,40 @@
                     </select>
                 </div>
                 <button type="submit" class="btn">{{ CAdminInfo.SendBankMoney.submit_button }}</button>
+            </form>
+        </div>
+
+        <div class="box">
+            <h2>{{ CAdminInfo.SendBill.title }}</h2>
+            <form method="POST" action="/billplayer/">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.BillType.title }}</label>
+                    <select name="type" required>
+                        <option disabled>{{ CAdminInfo.SendBill.BillType.first_select_option }}...</option>
+                        {% for bill_type in CAdminInfo.SendBill.BillType.types %}
+                        <option value="{{ bill_type }}">{{ bill_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.item_title }}</label>
+                    <input type="text" name="item" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.amount_title }}</label>
+                    <input type="number" name="amount" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>{{ CAdminInfo.SendBill.BillReceiver.title }}</label>
+                    <select name="receiver" required>
+                        <option disabled>{{ CAdminInfo.SendBill.BillReceiver.first_select_option }}...</option>
+                        {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn">{{ CAdminInfo.SendBill.submit_button }}</button>
             </form>
         </div>
         

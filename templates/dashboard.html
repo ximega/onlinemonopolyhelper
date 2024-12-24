@@ -140,6 +140,7 @@
             </form>
         </div>
 
+        {% if user_regions %}
         <div class="box">
             <h2>{{ DashboardInfo.Forms.RequestHotelBuild.title }}</h2>
             <form action="/requesthotelbuild/" method="POST">
@@ -203,6 +204,7 @@
                 <button type="submit" class="btn">{{ DashboardInfo.Forms.SellRegion.submit_button }}</button>
             </form>
         </div>
+        {% endif %}
     </div>
 </body>
 </html>
